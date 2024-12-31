@@ -1,13 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const port = process.env.PORT || 5000;
-
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASSWORD;
 app.use(cors());
 app.use(express.json());
 
-const uri = "mongodb+srv://tourist-management:tW18YnJh6giJSKSs@cluster0.wnyje.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = `mongodb+srv://${dbUser}:${dbPassword}@cluster0.wnyje.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
@@ -19,13 +21,19 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    // Send a ping to confirm a successful connection
+    const touristCollection = client.db('touristDB').collection('tourist');
+
+    // tourist operation**********
+    app.post('/spots', async(req, res) =>{
+        const spot = req.body;
+        const result = await touristCollection.insertOne(spot);
+        res.send(result);
+    })
+
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
     // await client.close();
   }
 }
@@ -37,6 +45,5 @@ app.get('/', (req, res)=>{
     res.send('Tourist management server');
 })
 app.listen(port, () =>{
-    console.log(`tourist management server is running on port ${port}`);
-    
+    console.log(`tourist management server is running on port ${port}`);    
 })
