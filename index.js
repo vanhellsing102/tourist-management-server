@@ -25,6 +25,13 @@ async function run() {
     const touristCollection = client.db('touristDB').collection('tourist');
 
     // tourist operation**********
+    // get operation
+    app.get('/spots', async(req, res) =>{
+        const cursor = touristCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+    // post operaion
     app.post('/spots', async(req, res) =>{
         const spot = req.body;
         const result = await touristCollection.insertOne(spot);
@@ -38,7 +45,6 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
 
 
 app.get('/', (req, res)=>{
