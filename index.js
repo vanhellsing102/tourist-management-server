@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
@@ -25,13 +25,26 @@ async function run() {
     const touristCollection = client.db('touristDB').collection('tourist');
 
     // tourist operation**********
+    // delete operation 
+    app.delete("/spots/:id", async(req, res) =>{
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id)};
+      const result = await touristCollection.deleteOne(query);
+      res.send(result);
+    })
     // get operation
     app.get('/spots', async(req, res) =>{
         const cursor = touristCollection.find();
         const result = await cursor.toArray();
         res.send(result);
     })
-    // post operaion
+    app.get('/spots/:id', async(req, res) =>{
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id)};
+      const result = await touristCollection.findOne(query);
+      res.send(result);
+    })
+    // post operation
     app.post('/spots', async(req, res) =>{
         const spot = req.body;
         const result = await touristCollection.insertOne(spot);
