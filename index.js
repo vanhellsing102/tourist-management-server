@@ -25,6 +25,30 @@ async function run() {
     const touristCollection = client.db('touristDB').collection('tourist');
 
     // tourist operation**********
+    // update operation
+    app.patch("/spots/:id", async(req, res) =>{
+      const id = req.params.id;
+      const spot = req.body;
+      const filter = { _id: new ObjectId(id)};
+      const options = { upsert: true};
+      const updateDoc = {
+        $set: {
+          image: spot.image,
+          tourists_spot_name: spot.tourists_spot_name,
+          country_name: spot.country_name,
+          location: spot.location,
+          short_description: spot.short_description,
+          average_cost: spot.average_cost,
+          seasonality: spot.seasonality,
+          travel_time: spot.travel_time,
+          total_visitors_per_year: spot.total_visitors_per_year,
+          user_name: spot.user_name,
+          user_email: spot.user_email
+        }
+      }
+      const result = await touristCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    })
     // delete operation 
     app.delete("/spots/:id", async(req, res) =>{
       const id = req.params.id;
