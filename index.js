@@ -23,7 +23,14 @@ async function run() {
   try {
     await client.connect();
     const touristCollection = client.db('touristDB').collection('tourist');
+    const countryCollection = client.db('touristDB').collection('country')
 
+    // country operation
+    app.get('/country', async(req, res) =>{
+      const cursor = countryCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
     // tourist operation**********
     // update operation
     app.patch("/spots/:id", async(req, res) =>{
